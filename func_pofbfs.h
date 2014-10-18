@@ -4,7 +4,7 @@
 // #include "p_heap.h"
 #include "calc.h"
 void insertNode(FA* ,int ,int, ll_task*);
-
+int NonEmptyFrame(FA* , int );
 void pofbfs(){
 	FILE* fp;
 	int n;		//no. of tasks
@@ -38,12 +38,22 @@ void pofbfs(){
 			int count = 0; 		//to maintain if all frames are empty
 			int i;
 			if(NonEmptyFrame(fa_ds,frameIndex)){
-				ll_task* sortedList;		//sorted list of tasks
+				ll_task* sortedlist_head = NULL,temp;		//sorted list of tasks
 				count = 0;		//reset count
 				frame* curFrame = fa_ds->arrayFrames[frameIndex];
 				for(i=0;i<G;i++){
 					ll_task* t_node = curFrame -> arrayNodes[i];
-					
+					while(t_node!=NULL){
+						if(sortedList==NULL){
+							sortedlist_head = t_node;
+							temp = sortedlist_head;
+							t_node = t_node -> next;
+						}
+						else{
+							temp->next = t_node;
+							t_node = t_node->next;
+						}
+					}
 				}
 			}
 			else{
