@@ -1,45 +1,31 @@
-typedef struct taskNode task;
-typedef struct llNode ll;
-typedef struct procNode proc;
-typedef struct t_h t_heap;		//minheap of taskpointers
-typedef struct p_h p_heap;		//minheap of procpointers
-typedef struct ll_TaskNode ll_task;
-typedef struct frameList frame;
-typedef struct FA_node FA;
+#include <stdlib.h>
 
-struct t_h {
-	task** t_h_array;		//array of task pointers			
-	int t_h_count;				//number of elements in heap
-	int t_h_capacity;			//size of heap
-};
-
-struct p_h {
-	proc** p_h_array;		//array of processor pointers
-	int p_h_count;				//number of elements in heap
-	int p_h_capacity;			//size of heap
-};
+#define G 12
+#define FSZ 50
 
 struct procNode {
 	int p_id;
 	int p_sc;					//spare capacity
 	int p_migr;
 	int p_prev_migr;
-	t_heap* p_RH;				//RHi->ready heap pointer
+	struct t_h* p_RH;				//RHi->ready heap pointer
 };
+typedef struct procNode proc;
 
 struct llNode{						//linked list
 	proc* p;				//processor node
-	ll* next;
+	struct llNode * next;
 };
+typedef struct llNode ll;
 
-struct task {
+struct taskNode {
 	int t_id;
 	int t_e;
 	int t_p;
 	int t_re;
-	int t_pe;
+	int t_rp;
 	int t_start;
-	int t_wt;
+	float t_wt;
 	int t_shr;
 	int t_naf;
 	int t_wt_me;
@@ -48,19 +34,80 @@ struct task {
 	int t_pd;
 	ll* t_TP;			//TPj->linked list of processors
 };
+typedef struct taskNode task;
+
+
+
+struct t_h {
+	task** t_h_array;		//array of task pointers			
+	int t_h_count;				//number of elements in heap
+	int t_h_capacity;			//size of heap
+};
+typedef struct t_h t_heap;		//minheap of taskpointers
+
+
+struct p_h {
+	proc** p_h_array;		//array of processor pointers
+	int p_h_count;				//number of elements in heap
+	int p_h_capacity;			//size of heap
+};
+typedef struct p_h p_heap;		//minheap of procpointers
+
+
+
+
+
+
 
 //Main DataStructure FA
 
 struct ll_TaskNode {		//Linked list of tasks
 	task* t;
-	ll_task* next;
+	struct ll_TaskNode * next;
 };
+typedef struct ll_TaskNode ll_task;
 
 struct frameList {
 	ll_task* arrayNodes[G];
 };
+typedef struct frameList frame;
 
-struct FA_node{
+struct FA_ds{
 	frame* arrayFrames[FSZ]; //need to define FSZ
 };
+typedef struct FA_ds FA;
 
+//end of declaration of structs
+
+
+task* createTask(){
+	task* newTask = (task*)malloc(sizeof(task));
+	newTask->t_start = 0;
+	return newTask;
+}
+
+ll_task* createllTask(task* t){
+	ll_task* newllTask = (ll_task*)malloc(sizeof(ll_task));
+	newllTask->next = NULL;
+	newllTask->t = t;
+	return newllTask;
+}
+
+frame* createFrame(){
+	int i;
+	frame* newFrame = (frame*)malloc(sizeof(frame));
+	for(i=0;i<G;i++){
+		newFrame->arrayNodes[i] = NULL;
+	}
+	return newFrame;
+}
+
+FA* createFA(){
+	int i;
+	FA* newFA = (FA*)malloc(sizeof(FA));
+	for(i=0;i<FSZ;i++){
+		frame* newFrame = createFrame();
+		newFA->arrayFrames[i] = newFrame;
+	}
+	return newFA;
+}
