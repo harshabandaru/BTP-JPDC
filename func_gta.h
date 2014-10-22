@@ -64,6 +64,7 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 		tshr = taski->t_shr;
 		ll_p* temp_TP;
 		//if tshr > 0 and there are more processors in the heap of processors P
+		jump_stmt:
 		if(tshr > 0 && p_sc_h->p_h_count > 0){
 			//Extract the next processor with highest sc from list P
 			max_sc_p = deleteMin(p_sc_h);
@@ -118,9 +119,15 @@ the next frame. and update wts of fixed tasks*/
 		if(tshr > max_sc_p->p_sc){
 			tshr = tshr - (max_sc_p->p_sc);
 			max_sc_p->p_sc = 0;
+			goto jump_stmt;
 		}
-
-
+		//sc k ← sc k − tshr; tshr ← 0.
+		else{
+			max_sc_p->p_sc = max_sc_p->p_sc - tshr;
+			//Delete the first processor from list TP j
+			taski->t_TP = taski->t_TP->next;
+		}
+		p_insert(p_sc_h,max_sc_p);
 		tempmigr=tempmigr->next;
 	}
 
