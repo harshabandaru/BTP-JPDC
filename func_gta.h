@@ -26,7 +26,7 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 		if(taski->t_shr > max_sc_p->p_sc){	
 			if(migrlist_head->next==NULL){		
 				migrlist_head->t = taski;
-			}
+			}         
 			else{
 				//insert at the end of the migrating list
 				tempmigr = migrlist_head;
@@ -106,11 +106,26 @@ the next frame. and update wts of fixed tasks*/
 				}
 
 			}
-			
+			//Insert T j in the ready heap RH pc k
+			t_insert(max_sc_p->p_RH,taski);
+
+		}
+
+		/*
+		if tshr > sc k then
+		tshr ← tshr − sc k ; sc k ← 0; Goto Step 10.
+		*/	
+		if(tshr > max_sc_p->p_sc){
+			tshr = tshr - (max_sc_p->p_sc);
+			max_sc_p->p_sc = 0;
 		}
 
 
 		tempmigr=tempmigr->next;
 	}
+
+	
+	
+
 
 }
