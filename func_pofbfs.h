@@ -55,6 +55,7 @@ void pofbfs(){
 						}
 					}
 				}
+				GlobalTaskAllocator(sortedlist_head,m);
 			}
 			else{
 				count ++;

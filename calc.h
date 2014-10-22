@@ -45,8 +45,20 @@ int calc_pd(task* t,int k){
 	return ((int)ceil((float)k / (float)t->t_wt));
 }
 
+void calc_wt_me(proc* p, task* fixed_t,task* migr_t){
+	int shr1 = migr_t->t_shr;
+	int shri = fixed_t->t_shr;
+	int sc = p->p_sc;
+	int p_id = p->p_id;
+	fixed_t->t_me[p_id] = (shri*(G-shr1))/(G*(G-sc));
+}
 
-
+void calc_wt_mpe(proc* p,task* t){
+	int p_id = p->p_id;
+	int sc = p->p_sc;
+	int shri = t->t_shr;
+	t->t_mpe[p_id] = (shri)/(G-sc);
+}
 
 
 

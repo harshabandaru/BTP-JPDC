@@ -68,7 +68,8 @@ void t_heapify(t_heap* h, int i){
 	r = t_rightChild(h,i);
 	if(l!=-1 && (h->t_h_array[l]->t_pd) < h->t_h_array[i]->t_pd)
 		min = l;
-	
+	else
+		min = i;
 	if(r!=-1 && (h->t_h_array[r]->t_pd) < h->t_h_array[min]->t_pd)
 		min = l;
 
@@ -77,8 +78,9 @@ void t_heapify(t_heap* h, int i){
 		temp = h->t_h_array[i];
 		h->t_h_array[i] = h->t_h_array[min];
 		h->t_h_array[min] = temp;
+		t_heapify(h,min);
 	}
-	t_heapify(h,min);
+	
 }
 
 void t_insert(t_heap* h,task* t){
@@ -88,7 +90,7 @@ void t_insert(t_heap* h,task* t){
 	h->t_h_count++;
 
 	int i = h->t_h_count;
-	while(i > 1 && t->t_pd < h->t_h_array[(i-1)/2]->t_pd){
+	while(i > 0 && t->t_pd < h->t_h_array[(i-1)/2]->t_pd){
 		h->t_h_array[i] = h->t_h_array[(i-1)/2];
 		i = (i-1)/2;
 	}
