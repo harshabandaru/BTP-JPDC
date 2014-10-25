@@ -1,3 +1,4 @@
+#pragma once
 #include "p_heap.h" 		//p_heap api test codes
 int main(){
 	p_heap* h = p_createHeap(2);

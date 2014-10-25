@@ -1,3 +1,4 @@
+#pragma once
 #include "ds.h"
 #include <stdio.h>
 //heap is maintained by the spare capacities of the processors

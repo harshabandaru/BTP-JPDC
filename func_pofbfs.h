@@ -1,8 +1,10 @@
+#pragma once
 #include <stdio.h>
 #include <stdlib.h>
-// #include "t_heap.h"
-// #include "p_heap.h"
+#include "t_heap.h"
+#include "p_heap.h"
 #include "calc.h"
+#include "func_gta.h"
 void insertNode(FA* ,int ,int, ll_task*);
 int NonEmptyFrame(FA* , int );
 void pofbfs(){
@@ -33,18 +35,19 @@ void pofbfs(){
 		ll_task* nodealpha = createllTask(t);		//line 5
 		insertNode(fa_ds,t->t_naf,t->t_shr,nodealpha);	//line 6
 
-		while(true){
+		while(1){
 			int frameIndex = 0;
 			int count = 0; 		//to maintain if all frames are empty
 			int i;
 			if(NonEmptyFrame(fa_ds,frameIndex)){
-				ll_task* sortedlist_head = NULL,temp;		//sorted list of tasks
+				ll_task* sortedlist_head = NULL;
+				ll_task* temp=sortedlist_head;		//sorted list of tasks
 				count = 0;		//reset count
 				frame* curFrame = fa_ds->arrayFrames[frameIndex];
 				for(i=0;i<G;i++){
 					ll_task* t_node = curFrame -> arrayNodes[i];
 					while(t_node!=NULL){
-						if(sortedList==NULL){
+						if(temp==NULL){
 							sortedlist_head = t_node;
 							temp = sortedlist_head;
 							t_node = t_node -> next;
@@ -52,9 +55,11 @@ void pofbfs(){
 						else{
 							temp->next = t_node;
 							t_node = t_node->next;
+							temp = temp->next;
 						}
 					}
 				}
+				temp->next = NULL;  //put the next pointer of last node to NULL
 				GlobalTaskAllocator(sortedlist_head,m);
 			}
 			else{
@@ -84,7 +89,7 @@ void insertNode(FA* fa_ds,int naf,int shr,ll_task* nodealpha){
 /*return 1 if frame is nonempty*/
 int NonEmptyFrame(FA* fa_ds, int frameIndex){
 	int i;
-	flag = 0;
+	int flag = 0;
 	frame* curFrame = fa_ds->arrayFrames[frameIndex];
 	for(i=0;i<G;i++){
 		if(curFrame->arrayNodes[i]!=NULL){

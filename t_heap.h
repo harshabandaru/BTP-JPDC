@@ -1,4 +1,6 @@
+#pragma once
 #include "ds.h"
+#include <stdio.h>
 //heap is maintained by the pseudo deadlines of the tasks
 
 t_heap* t_createHeap (int);
@@ -45,14 +47,14 @@ int t_rightChild (t_heap* h, int i){
 
 task* t_getMinimum(t_heap* h){
 	if(h->t_h_count == 0)
-		return -1;
+		return NULL;
 	return h->t_h_array[0];
 }
 
 task* t_deleteMin(t_heap* h){
 	task* taskNode;
 	if(h->t_h_count == 0)
-		return -1;
+		return NULL;
 
 	taskNode = h->t_h_array[0];
 	h->t_h_array[0] = h->t_h_array[h->t_h_count-1];

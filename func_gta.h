@@ -1,3 +1,4 @@
+#pragma once
 #include "p_heap.h"
 #include "t_heap.h"
 void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
@@ -21,7 +22,7 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 	
 	while(templlTask!=NULL){
 		taski = templlTask->t;
-		max_sc_p = deleteMin(p_sc_h);
+		max_sc_p = p_deleteMin(p_sc_h);
 		//insert into migrating task list if proc cannot hold the task
 		if(taski->t_shr > max_sc_p->p_sc){	
 			if(migrlist_head->next==NULL){		
@@ -43,12 +44,12 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 				max_sc_p->p_RH = t_createHeap(10);
 			}
 
-			taski->t_pd = t_shr;		//for now initialising pd to share of task
+			taski->t_pd = tshr;		//for now initialising pd to share of task
 			t_insert(max_sc_p->p_RH,taski);	//insert into readyheap of processor
 			max_sc_p->p_sc = max_sc_p->p_sc - taski->t_shr;
 
 			//insert processor back into its place
-			if(max_sc_p->sc > 0)
+			if(max_sc_p->p_sc > 0)
 				p_insert(p_sc_h,max_sc_p);	 
 		}
 
@@ -67,7 +68,7 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 		jump_stmt:
 		if(tshr > 0 && p_sc_h->p_h_count > 0){
 			//Extract the next processor with highest sc from list P
-			max_sc_p = deleteMin(p_sc_h);
+			max_sc_p = p_deleteMin(p_sc_h);
 			temp_TP = taski->t_TP;
 			if(temp_TP==NULL){
 				taski->t_TP = createllProc(max_sc_p) ;
@@ -80,7 +81,7 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 			}
 
 			//calculate wt_me and wt_mpe for all fixed tasks
-			t_h* t_rh = max_sc_p->p_RH;
+			t_heap* t_rh = max_sc_p->p_RH;
 			task** t_array = t_rh -> t_h_array;
 			task* t_fixed;
 			for(i=0; i < t_rh->t_h_count; i++){
