@@ -7,6 +7,16 @@
 #include "func_gta.h"
 void insertNode(FA* ,int ,int, ll_task*);
 int NonEmptyFrame(FA* , int );
+
+void printlist(ll_task* sortedlist_head){
+	ll_task* temp = sortedlist_head;
+	while(temp!=NULL){
+		task* ti = temp->t;
+		printf("in list:%d %d %d %f \n",ti->t_id,ti->t_naf,ti->t_shr ,ti->t_wt);
+		temp = temp->next;
+	}
+}
+
 void pofbfs(){
 	FILE* fp;
 	int n;		//no. of tasks
@@ -31,46 +41,65 @@ void pofbfs(){
 		t->t_shr = calc_shr(t);
 		t->t_wt = calc_wt(t);
 		t->t_count = t->t_shr;
-		//printf("%d %d %f \n",t->t_naf,t->t_shr ,t->t_wt);
+		printf("%d %d %f \n",t->t_naf,t->t_shr ,t->t_wt);
 		ll_task* nodealpha = createllTask(t);		//line 5
 		insertNode(fa_ds,t->t_naf,t->t_shr,nodealpha);	//line 6
-
-		while(1){
-			int frameIndex = 0;
-			int count = 0; 		//to maintain if all frames are empty
-			int i;
-			if(NonEmptyFrame(fa_ds,frameIndex)){
-				ll_task* sortedlist_head = NULL;
-				ll_task* temp=sortedlist_head;		//sorted list of tasks
-				count = 0;		//reset count
-				frame* curFrame = fa_ds->arrayFrames[frameIndex];
-				for(i=0;i<G;i++){
-					ll_task* t_node = curFrame -> arrayNodes[i];
-					while(t_node!=NULL){
-						if(temp==NULL){
-							sortedlist_head = t_node;
-							temp = sortedlist_head;
-							t_node = t_node -> next;
-						}
-						else{
-							temp->next = t_node;
-							t_node = t_node->next;
-							temp = temp->next;
-						}
+	}
+    int frameIndex = 0;
+    int count = 0; 		//to maintain if all frames are empty
+	while(1){
+		
+		
+		int i;
+		printf("frameIndex:%d\n",frameIndex );
+		if(NonEmptyFrame(fa_ds,frameIndex)){
+			printf("insideif:%d\n",frameIndex );
+			ll_task* sortedlist_head = NULL;
+			ll_task* temp=sortedlist_head;		//sorted list of tasks
+			count = 1;		//reset count
+			frame* curFrame = fa_ds->arrayFrames[frameIndex];
+			//printf("1\n");
+			for(i=0;i<G;i++){
+				ll_task* t_node = curFrame -> arrayNodes[i];
+				//printf("2\n");
+				while(t_node!=NULL){
+					//printf("3\n");
+					if(temp==NULL){
+						//printf("4\n");
+						sortedlist_head = t_node;
+						temp = sortedlist_head;
+						t_node = t_node -> next;
+					}
+					else{
+						//printf("5\n");
+						temp->next = t_node;
+						t_node = t_node->next;
+						temp = temp->next;
 					}
 				}
-				temp->next = NULL;  //put the next pointer of last node to NULL
-				GlobalTaskAllocator(sortedlist_head,m);
 			}
-			else{
-				count ++;
-			}
-			frameIndex = (frameIndex+1)%FSZ;	//maintain circular array
-			if(count == FSZ)
-				break;
-		}
+			temp->next = NULL;  //put the next pointer of last node to NULL
 
+			//clear the tasks in the frame after storing in sortedlist
+			for(i=0;i<G;i++){
+				curFrame->arrayNodes[i] = NULL;
+			}
+
+			printlist(sortedlist_head);
+			GlobalTaskAllocator(sortedlist_head,m);
+			//count++;
+		}
+		else{
+			count ++;
+			printf("count:%d\n",count );
+		}
+		//printf("3\n");
+		frameIndex = (frameIndex+1)%FSZ;	//maintain circular array
+		if(count == FSZ)
+			break;
 	}
+
+	
 }
 
 void insertNode(FA* fa_ds,int naf,int shr,ll_task* nodealpha){
@@ -98,4 +127,18 @@ int NonEmptyFrame(FA* fa_ds, int frameIndex){
 		}
 	}
 	return flag;
+}
+
+void printFA(FA* fa_ds){
+	int i,j;
+	for(i=0;i<FSZ;i++){
+		frame* curFrame = fa_ds->arrayFrames[i];
+		for(j=0;j<G;j++){
+
+			if(curFrame->arrayNodes[i]!=NULL){
+				
+			
+			}
+		}
+	}
 }

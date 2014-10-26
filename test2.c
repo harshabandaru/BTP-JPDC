@@ -35,3 +35,15 @@ int main(){
 	printf("%d\n",minp->p_sc);
 	return 0;
 }
+
+/*
+
+
+10 12
+9 12
+9 12
+4 12
+4 12
+
+
+*/

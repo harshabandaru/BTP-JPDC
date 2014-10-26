@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #define G 12
-#define FSZ 50
+#define FSZ 10
 int p_id_counter = -1;
 int t_id_counter = -1;
 struct procNode {

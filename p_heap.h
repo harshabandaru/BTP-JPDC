@@ -122,3 +122,10 @@ void p_resizeHeap(p_heap* h){
 	free(array_old); 
 }
 
+void p_printheap(p_heap* h){
+	int i;
+	for(i=0;i<h->p_h_count;i++){
+			printf("%d ",h->p_h_array[i]->p_sc);
+	}
+	printf("\n");
+}

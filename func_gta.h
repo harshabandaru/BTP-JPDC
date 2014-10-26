@@ -1,7 +1,18 @@
 #pragma once
 #include "p_heap.h"
 #include "t_heap.h"
+
+void printmigrlist(ll_task* migrlist_head){
+	ll_task* temp = migrlist_head;
+	while(temp!=NULL){
+		task* ti = temp->t;
+		printf("in migr list:%d %d %d %f \n",ti->t_id,ti->t_naf,ti->t_shr ,ti->t_wt);
+		temp = temp->next;
+	}
+}
+
 void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
+	printf("----------------------In GTA function ----------------\n");
 	int i;	
 	int tshr;
 	task* taski;
@@ -13,20 +24,25 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 		p_insert(p_sc_h,p);
 	}
 
-	ll_task* migrlist_head = (ll_task*)malloc(sizeof(ll_task)); //list of migrating tasks
-	migrlist_head->next = NULL;	
-	ll_task* tempmigr;
-
+	ll_task* migrlist_head =NULL;//= (ll_task*)malloc(sizeof(ll_task)); //list of migrating tasks
+	//migrlist_head->next = NULL;	
+	ll_task* tempmigr=NULL;
+	//printf("11\n");
+	//---------------------------------------------------------------------
 	//allocate fixed tasks starting with the heaviest task
 	ll_task* templlTask = sortedlist_head;
-	
+	printf("---------------allocation of fixed tasks------------\n");
 	while(templlTask!=NULL){
 		taski = templlTask->t;
 		max_sc_p = p_deleteMin(p_sc_h);
+
 		//insert into migrating task list if proc cannot hold the task
+		printf("Spare capacity of max proc with proc id %d:%d\n",max_sc_p->p_id, max_sc_p->p_sc);
 		if(taski->t_shr > max_sc_p->p_sc){	
-			if(migrlist_head->next==NULL){		
-				migrlist_head->t = taski;
+			printf("task %d is migrating task\n",taski->t_id );
+			if(migrlist_head==NULL){	
+				migrlist_head = createllTask(taski);	
+				tempmigr = migrlist_head;
 			}         
 			else{
 				//insert at the end of the migrating list
@@ -34,30 +50,48 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 				while(tempmigr->next != NULL){
 					tempmigr = tempmigr->next;
 				}
-				tempmigr->next = templlTask;
+				tempmigr->next = createllTask(taski);
 			}
+		p_insert(p_sc_h,max_sc_p);
 		} 
 
 		else{
 			//create readyheap if not created
+			printf("task %d is fixed task with shr :%d\n",taski->t_id,taski->t_shr );
 			if(max_sc_p->p_RH == NULL){ 
 				max_sc_p->p_RH = t_createHeap(10);
 			}
-
+			//printf("1\n");
 			taski->t_pd = tshr;		//for now initialising pd to share of task
 			t_insert(max_sc_p->p_RH,taski);	//insert into readyheap of processor
+			//printf("2\n");
 			max_sc_p->p_sc = max_sc_p->p_sc - taski->t_shr;
 
 			//insert processor back into its place
 			if(max_sc_p->p_sc > 0)
-				p_insert(p_sc_h,max_sc_p);	 
+				p_insert(p_sc_h,max_sc_p);	
+			//printf("3\n"); 
 		}
 
 		templlTask=templlTask->next;
 	}
 
-	//end of allocation of fixed tasks
+	p_printheap(p_sc_h);
+	printf("---------End of allocation of fixed tasks--------------\n");
 
+	//---------debugging info
+
+	//printf("%d\n", );
+	for(i=0;i<p_sc_h->p_h_count;i++){	
+		printf("Processor id:%d\n", p_sc_h->p_h_array[i]->p_id);	
+		if(p_sc_h->p_h_array[i]->p_RH!=NULL)
+			t_printheap(p_sc_h->p_h_array[i]->p_RH);
+	}
+
+	//----------debugging info
+
+	//end of allocation of fixed tasks
+//--------------------------------------------------------------------------------
 	//Now allocate for migrating tasks
 	tempmigr = migrlist_head;
 	while(tempmigr!=NULL){

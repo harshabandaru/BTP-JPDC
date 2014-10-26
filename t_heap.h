@@ -90,8 +90,8 @@ void t_insert(t_heap* h,task* t){
 		t_resizeHeap(h);
 
 	h->t_h_count++;
-
-	int i = h->t_h_count;
+	printf("in t_heap:Insert function\n");
+	int i = h->t_h_count-1;
 	while(i > 0 && t->t_pd < h->t_h_array[(i-1)/2]->t_pd){
 		h->t_h_array[i] = h->t_h_array[(i-1)/2];
 		i = (i-1)/2;
@@ -117,3 +117,10 @@ void t_resizeHeap(t_heap* h){
 	free(array_old); 
 }
 
+void t_printheap(t_heap* h){
+	int i;
+	for(i=0;i<h->t_h_count;i++){
+			printf("%d ",h->t_h_array[i]->t_id);
+		}
+	printf("\n");
+}
