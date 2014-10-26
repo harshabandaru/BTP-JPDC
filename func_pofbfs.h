@@ -25,6 +25,7 @@ void pofbfs(){
 	fp = fopen("input","r");
 	fscanf(fp,"%d",&n);
 	fscanf(fp,"%d",&m);
+	
 	FA* fa_ds = createFA();
 	for(i=0;i<n;i++){			//for each active task Ti (Initialise FA)
 		int ei,pi,rei,rpi;

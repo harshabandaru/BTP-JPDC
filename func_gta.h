@@ -17,6 +17,8 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 	int tshr;
 	task* taski;
 	proc* max_sc_p;
+	ll_p* final_proc_head=NULL; //list of processors after allocation
+	ll_p* tempfinalproc=NULL;
 	//create a heap for maintaining processor spare capacities at all time 
 	p_heap* p_sc_h = p_createHeap(m); 	
 	for(i=0;i<m;i++){		
@@ -70,7 +72,18 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 			//insert processor back into its place
 			if(max_sc_p->p_sc > 0)
 				p_insert(p_sc_h,max_sc_p);	
+			//add it to final proc list
+			else{
+				if(final_proc_head==NULL){
+					final_proc_head = createllProc(max_sc_p);
+				}
+				else{
+					tempfinalproc = createllProc(max_sc_p);
+					tempfinalproc->next = final_proc_head;
+					final_proc_head = tempfinalproc;
+				}
 			//printf("3\n"); 
+			}
 		}
 
 		templlTask=templlTask->next;
@@ -93,6 +106,9 @@ void GlobalTaskAllocator(ll_task* sortedlist_head,int m){
 	//end of allocation of fixed tasks
 //--------------------------------------------------------------------------------
 	//Now allocate for migrating tasks
+
+	printf("---------------allocation of migrating tasks------------\n");
+	printmigrlist(migrlist_head);
 	tempmigr = migrlist_head;
 	while(tempmigr!=NULL){
 		taski = tempmigr->t;
@@ -154,6 +170,17 @@ the next frame. and update wts of fixed tasks*/
 		if(tshr > max_sc_p->p_sc){
 			tshr = tshr - (max_sc_p->p_sc);
 			max_sc_p->p_sc = 0;
+
+			//add it to final proc list
+			if(final_proc_head==NULL){
+				final_proc_head = createllProc(max_sc_p);
+			}
+			else{
+				tempfinalproc = createllProc(max_sc_p);
+				tempfinalproc->next = final_proc_head;
+				final_proc_head = tempfinalproc;
+			}
+
 			goto jump_stmt;
 		}
 		//sc k ← sc k − tshr; tshr ← 0.
@@ -165,9 +192,35 @@ the next frame. and update wts of fixed tasks*/
 		p_insert(p_sc_h,max_sc_p);
 		tempmigr=tempmigr->next;
 	}
-
+printf("---------------end of allocation of migrating tasks------------\n");
 	
-	
+	//add all the remaining processors to the final list of processors after allocation
+	for(i=0;i<p_sc_h->p_h_count;i++){	
+		proc* toaddProc = p_sc_h->p_h_array[i];
+		if(final_proc_head==NULL){
+				final_proc_head = createllProc(toaddProc);
+		}
+		else{
+			tempfinalproc = createllProc(toaddProc);
+			tempfinalproc->next = final_proc_head;
+			final_proc_head = tempfinalproc;
+		}
+	}
 
+	//---------debugging info
+
+	printf("------Final list---------\n" );
+	tempfinalproc = final_proc_head;
+	while(tempfinalproc!=NULL){
+
+		proc* dproc = tempfinalproc->p;
+		printf("Processor id:%d with spare capacity: %d\n", dproc->p_id,dproc->p_sc);	
+		if(dproc->p_RH!=NULL)
+			t_printheap(dproc->p_RH);
+
+		tempfinalproc = tempfinalproc->next;
+	}
+	printf("------Final list---------\n" );
+	//----------debugging info
 
 }
